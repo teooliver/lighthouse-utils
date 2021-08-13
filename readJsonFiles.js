@@ -1,4 +1,13 @@
 const fs = require('fs');
+const glob = require('glob');
+
+glob('reports/*.json', function (er, files) {
+  console.log(files);
+  // files is an array of filenames.
+  // If the `nonull` option is set, and nothing
+  // was found, then files is ["**/*.js"]
+  // er is an error object or null.
+});
 
 const categories = ['performance'];
 
@@ -12,7 +21,7 @@ const metricsEnum = [
 ];
 
 const jsonFile = fs.readFileSync(
-  './reports/attract-1639-control-v1.report.json',
+  'reports/attract-1639-control-v1.report.json',
   'utf8'
 );
 

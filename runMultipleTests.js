@@ -2,7 +2,7 @@
 
 const execSync = require('child_process').execSync;
 const fs = require('fs');
-const TEST_OBJ = require('./data');
+const TEST_OBJ = require('./data'); //config_object
 let runs = 0;
 let runLimit = 2;
 
