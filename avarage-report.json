@@ -1,0 +1,20 @@
+{
+  "control": {
+    "Performance": 0.44333333333333336,
+    "First Contentful Paint": 0.9400000000000001,
+    "Speed Index": 1.7333333333333334,
+    "Largest Contentful Paint": 1.9766666666666668,
+    "Time to Interactive": 2.2166666666666672,
+    "Total Blocking Time": 2.473333333333334,
+    "Cumulative Layout Shift": 3.473333333333334
+  },
+  "test": {
+    "Performance": 0.7033333333333333,
+    "First Contentful Paint": 1.21,
+    "Speed Index": 2.15,
+    "Largest Contentful Paint": 2.3366666666666664,
+    "Time to Interactive": 3.186666666666667,
+    "Total Blocking Time": 4.11,
+    "Cumulative Layout Shift": 5.11
+  }
+}
