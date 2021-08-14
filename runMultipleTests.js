@@ -29,17 +29,17 @@ do {
     execSync(
       `lighthouse ${
         TEST_OBJ.websites.controlURL
-      } --chrome-flags="--headless" --only-categories="performance" --output=json --output=html --output-path=./${dir}/attract-1639-control-v${
+      } --quiet --chrome-flags="--headless" --only-categories="performance" --output=json --output=html --output-path=./${dir}/attract-1639-control-v${
         runs + 1
       }`
     );
-    // execSync(
-    //   `lighthouse ${
-    //     TEST_OBJ.websites.testURL
-    //   } --quiet --chrome-flags="--headless" --output=html --output-path=./${dir}/attract-1639-test-v${
-    //     runs + 1
-    //   }.html`
-    // );
+    execSync(
+      `lighthouse ${
+        TEST_OBJ.websites.testURL
+      } --quiet --chrome-flags="--headless" --only-categories="performance" --output=json --output=html --output-path=./${dir}/attract-1639-test-v${
+        runs + 1
+      }`
+    );
   } catch (err) {
     console.log(`Performance test ${runs + 1} failed`);
     console.log(err);

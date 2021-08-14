@@ -1,13 +1,37 @@
 const fs = require('fs');
-const glob = require('glob');
+// const glob = require('glob');
 
-glob('reports/*.json', function (er, files) {
-  console.log(files);
-  // files is an array of filenames.
-  // If the `nonull` option is set, and nothing
-  // was found, then files is ["**/*.js"]
-  // er is an error object or null.
+let controlFiles = [];
+let testFiles = [];
+
+// glob('reports/*.json', function (er, files) {
+//   console.log(files);
+//   filePaths = files;
+// });
+// console.log(filePaths);
+
+//Also nice
+function getFilesFromPath(path, extension) {
+  let files = fs.readdirSync(path);
+  return files.filter((file) =>
+    file.match(new RegExp(`.*\.(${extension})`, 'ig'))
+  );
+}
+
+// console.log(getFilesFromPath('./reports', '.json'));
+
+const filePaths = getFilesFromPath('./reports', '.json');
+
+filePaths.forEach((file) => {
+  if (file.includes('control')) {
+    controlFiles.push(file);
+  } else {
+    testFiles.push(file);
+  }
 });
+
+console.log('control =>', controlFiles);
+console.log('test files =>', testFiles);
 
 const categories = ['performance'];
 
