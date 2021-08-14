@@ -114,4 +114,5 @@ jspm_packages/
 .pnp.*
 
 data.js
+config.js
 reports

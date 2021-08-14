@@ -1,18 +1,27 @@
 const fs = require('fs');
+const config = require('./config');
+const createReportsDir = require('./createReportsDir');
 
 let controlFiles = [];
 let testFiles = [];
 
 function getFilesFromPath(path, extension) {
-  let files = fs.readdirSync(path);
-  return files.filter((file) =>
-    file.match(new RegExp(`.*\.(${extension})`, 'ig'))
-  );
+  try {
+    let files = fs.readdirSync(path);
+    return files.filter((file) =>
+      file.match(new RegExp(`.*\.(${extension})`, 'ig'))
+    );
+  } catch (error) {
+    throw 'Path not found, try running runMultipleTests.js first';
+    // console.log('Path not found, try running runMultipleTests.js first');
+  }
 }
 
+// sortFiles()
 const filePaths = getFilesFromPath('./reports', '.json');
 
 filePaths.forEach((file) => {
+  if (file.includes('avarage-report')) return;
   if (file.includes('control')) {
     controlFiles.push(file);
   } else {
@@ -49,6 +58,7 @@ const getAvaragePerfomance = (files) => {
   let sumMetrics = 0;
   let avarages = {};
 
+  //TODO: Fix: This is being repeated somewhere else.
   const metricsPropsEnum = [
     'Performance',
     'First Contentful Paint',
@@ -82,6 +92,7 @@ const getAvaragePerfomance = (files) => {
 let controlPerfomance = getAvaragePerfomance(controlFiles);
 let testPerfomance = getAvaragePerfomance(testFiles);
 
+//createAvaragePerfomanceReport(){
 const avaragePerformanceReport = JSON.stringify(
   {
     control: { ...controlPerfomance },
@@ -91,23 +102,25 @@ const avaragePerformanceReport = JSON.stringify(
   2
 );
 
+createReportsDir(config.reportsFolder);
 fs.writeFile(
-  './avarage-report.json',
+  'reports/avarage-report.json',
   avaragePerformanceReport,
   'utf8',
   (err) => {
     if (err) {
       console.log(`Error writing file: ${err}`);
     } else {
-      console.log(`Final avarage report is written successfully!`);
+      console.log(`Final avarage report was created successfully!`);
     }
   }
 );
+// }
 
-console.log('avaragePerformanceReport', avaragePerformanceReport);
+// console.log('avaragePerformanceReport', avaragePerformanceReport);
 
-console.log('CONTROL ====> ', controlPerfomance);
-console.log('TEST =======> ', testPerfomance);
+// console.log('CONTROL ====> ', controlPerfomance);
+// console.log('TEST =======> ', testPerfomance);
 
 const metricsTESTPropsEnum = [
   'Performance',
@@ -119,11 +132,11 @@ const metricsTESTPropsEnum = [
   'Cumulative Layout Shift',
 ];
 
-metricsTESTPropsEnum.forEach((metric) => {
-  if (controlPerfomance[metric] < testPerfomance[metric]) {
-    console.log(`Control ${metric}  is better!!!`);
-    return;
-  } else {
-    console.log(`Test ${metric}  is better!!!`);
-  }
-});
+// metricsTESTPropsEnum.forEach((metric) => {
+//   if (controlPerfomance[metric] < testPerfomance[metric]) {
+//     console.warn(`Control ${metric}  is better!!!`);
+//     return;
+//   } else {
+//     console.info(`Test ${metric}  is better!!!`);
+//   }
+// });
