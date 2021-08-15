@@ -3,7 +3,6 @@
 const execSync = require('child_process').execSync;
 const createReportsDir = require('./createReportsDir');
 const removeReportsDir = require('./removeReportsDir');
-
 const config = require('./config');
 let runs = 0;
 
