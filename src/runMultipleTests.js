@@ -42,3 +42,5 @@ do {
   runs++;
 } while (runs < config.runLimit);
 console.log(`All finished`);
+
+execSync(`node src/readJsonFiles.js`);

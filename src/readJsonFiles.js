@@ -13,11 +13,10 @@ function getFilesFromPath(path, extension) {
     );
   } catch (error) {
     throw 'Path not found, try running runMultipleTests.js first';
-    // console.log('Path not found, try running runMultipleTests.js first');
   }
 }
 
-// sortFiles()
+// sortFiles
 const filePaths = getFilesFromPath('./reports', '.json');
 
 filePaths.forEach((file) => {
@@ -58,8 +57,7 @@ const getAvaragePerfomance = (files) => {
   let sumMetrics = 0;
   let avarages = {};
 
-  //TODO: Fix: This is being repeated somewhere else.
-  const metricsPropsEnum = [
+  const metricsProps = [
     'Performance',
     'First Contentful Paint',
     'Speed Index',
@@ -69,7 +67,7 @@ const getAvaragePerfomance = (files) => {
     'Cumulative Layout Shift',
   ];
 
-  metricsPropsEnum.forEach((metricProp) => {
+  metricsProps.forEach((metricProp) => {
     for (let index = 0; index < files.length; index++) {
       const metrics = getMetricsFromFile(files[index]);
       sumMetrics = sumMetrics + metrics[metricProp];
@@ -89,48 +87,40 @@ const getAvaragePerfomance = (files) => {
   return avarages;
 };
 
-let controlPerfomance = getAvaragePerfomance(controlFiles);
-let testPerfomance = getAvaragePerfomance(testFiles);
+const createAvaragePerfomanceReport = () => {
+  let controlPerfomance = getAvaragePerfomance(controlFiles);
+  let testPerfomance = getAvaragePerfomance(testFiles);
 
-//createAvaragePerfomanceReport(){
-const avaragePerformanceReport = JSON.stringify(
-  {
-    control: { ...controlPerfomance },
-    test: { ...testPerfomance },
-  },
-  null,
-  2
-);
+  const avaragePerformanceReport = JSON.stringify(
+    {
+      control: { ...controlPerfomance },
+      test: { ...testPerfomance },
+    },
+    null,
+    2
+  );
 
-createReportsDir(config.reportsFolder);
-fs.writeFile(
-  'reports/avarage-report.json',
-  avaragePerformanceReport,
-  'utf8',
-  (err) => {
-    if (err) {
-      console.log(`Error writing file: ${err}`);
-    } else {
-      console.log(`Final avarage report was created successfully!`);
+  createReportsDir(config.reportsFolder);
+  fs.writeFile(
+    'reports/avarage-report.json',
+    avaragePerformanceReport,
+    'utf8',
+    (err) => {
+      if (err) {
+        console.log(`Error writing file: ${err}`);
+      } else {
+        console.log(`Final avarage report was created successfully!`);
+      }
     }
-  }
-);
-// }
+  );
+};
+
+createAvaragePerfomanceReport();
 
 // console.log('avaragePerformanceReport', avaragePerformanceReport);
 
 // console.log('CONTROL ====> ', controlPerfomance);
 // console.log('TEST =======> ', testPerfomance);
-
-const metricsTESTPropsEnum = [
-  'Performance',
-  'First Contentful Paint',
-  'Speed Index',
-  'Largest Contentful Paint',
-  'Time to Interactive',
-  'Total Blocking Time',
-  'Cumulative Layout Shift',
-];
 
 // metricsTESTPropsEnum.forEach((metric) => {
 //   if (controlPerfomance[metric] < testPerfomance[metric]) {
