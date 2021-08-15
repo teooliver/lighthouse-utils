@@ -2,6 +2,7 @@
 
 const execSync = require('child_process').execSync;
 const createReportsDir = require('./createReportsDir');
+const removeReportsDir = require('./removeReportsDir');
 
 const config = require('./config');
 let runs = 0;
@@ -9,8 +10,8 @@ let runs = 0;
 // directory path
 const dir = config.reportsFolder;
 
-// TODO: remove all folders and files related to previous tests
-
+//First remove to previous tests then run script
+removeReportsDir(dir);
 createReportsDir(dir);
 
 //Run lighthouse tests
