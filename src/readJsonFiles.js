@@ -53,6 +53,7 @@ const getMetricsFromFile = (fileName) => {
   return metricsObj;
 };
 
+// TODO: Fix and write tests
 const getAvaragePerfomance = (files) => {
   let sumMetrics = 0;
   let avarages = {};
