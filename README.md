@@ -11,3 +11,9 @@ Create a `config.js` inside the `src` folder following the `config.example.js` f
 Run the script: `src/runMultipleTests.js`
 
 This will create reports folder with `html` and `json` lighthouse reports, plus the `avarage-report.json` with the avarage performance numbers for control and tests.
+
+Todos:
+
+- Accept flags to run only control or test reports
+- Accept flags to run override number of tests
+- HTML report for the avarage

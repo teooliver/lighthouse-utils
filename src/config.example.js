@@ -3,7 +3,7 @@ module.exports = {
     controlURL: 'https://www.xxx.com/uk',
     testURL: 'https://www.yyy.com/uk',
   },
-  outFileName: 'something-report',
+  outFileName: 'branch-name',
   reportsFolder: 'reports',
-  runLimit: 10,
+  runLimit: 2,
 };

@@ -1,11 +1,20 @@
 const fs = require('fs');
 const config = require('./config');
-const createReportsDir = require('./createReportsDir');
+const createReportsDir = require('./utils/createReportsDir');
 
 let controlFiles = [];
 let testFiles = [];
 
-function getFilesFromPath(path, extension) {
+const lighthousePerfomanceMetrics = [
+  'first-contentful-paint',
+  'speed-index',
+  'largest-contentful-paint',
+  'interactive',
+  'total-blocking-time',
+  'cumulative-layout-shift',
+];
+
+function getJsonFilesFromPath(path, extension) {
   try {
     let files = fs.readdirSync(path);
     return files.filter((file) =>
@@ -16,29 +25,24 @@ function getFilesFromPath(path, extension) {
   }
 }
 
-// sortFiles
-const filePaths = getFilesFromPath('./reports', '.json');
+function sortFiles() {
+  const filePaths = getJsonFilesFromPath('./reports', '.json');
 
-filePaths.forEach((file) => {
-  if (file.includes('avarage-report')) return;
-  if (file.includes('control')) {
-    controlFiles.push(file);
-  } else {
-    testFiles.push(file);
-  }
-});
+  filePaths.forEach((file) => {
+    if (file.includes('avarage-report')) return;
+    if (file.includes('control')) {
+      controlFiles.push(file);
+      // Move to control folder?
+    } else {
+      testFiles.push(file);
+      // Move to test folder?
+    }
+  });
+}
+sortFiles();
 
 const getMetricsFromFile = (fileName) => {
   const metricsObj = {};
-
-  const metricsEnum = [
-    'first-contentful-paint',
-    'speed-index',
-    'largest-contentful-paint',
-    'interactive',
-    'total-blocking-time',
-    'cumulative-layout-shift',
-  ];
 
   const jsonFile = fs.readFileSync(`reports/${fileName}`, 'utf8');
   const metrics = JSON.parse(jsonFile);
@@ -46,8 +50,21 @@ const getMetricsFromFile = (fileName) => {
   metricsObj[metrics.categories['performance'].title] =
     metrics.categories['performance'].score;
 
-  metricsEnum.forEach((metric) => {
-    metricsObj[metrics.audits[metric].title] = metrics.audits[metric].score;
+  lighthousePerfomanceMetrics.forEach((metric) => {
+    if (metric == 'cumulative-layout-shift') {
+      metricsObj[metrics.audits[metric].id] = parseFloat(
+        metrics.audits[metric].displayValue.trim()
+      );
+    }
+    if (metric == 'total-blocking-time') {
+      metricsObj[metrics.audits[metric].id] = parseFloat(
+        metrics.audits[metric].displayValue.split('m')[0].trim()
+      );
+    } else {
+      metricsObj[metrics.audits[metric].id] = parseFloat(
+        metrics.audits[metric].displayValue.split('s')[0].trim()
+      );
+    }
   });
 
   return metricsObj;
@@ -55,36 +72,19 @@ const getMetricsFromFile = (fileName) => {
 
 // TODO: Fix and write tests
 const getAvaragePerfomance = (files) => {
-  let sumMetrics = 0;
   let avarages = {};
 
-  const metricsProps = [
-    'Performance',
-    'First Contentful Paint',
-    'Speed Index',
-    'Largest Contentful Paint',
-    'Time to Interactive',
-    'Total Blocking Time',
-    'Cumulative Layout Shift',
-  ];
+  const metricsProps = ['Performance', ...lighthousePerfomanceMetrics];
 
   metricsProps.forEach((metricProp) => {
+    let sumMetrics = 0;
     for (let index = 0; index < files.length; index++) {
       const metrics = getMetricsFromFile(files[index]);
       sumMetrics = sumMetrics + metrics[metricProp];
     }
-    avarages[metricProp] = sumMetrics / files.length;
+    avarages[metricProp] = (sumMetrics / files.length).toFixed(2);
   });
 
-  // for (let index = 0; index < files.length; index++) {
-  //   const metrics = getMetricsFromFile(files[index]);
-
-  //   sumMetrics = sumMetrics + metrics['Performance'];
-  // }
-
-  // avarageMetric = sumMetrics / files.length;
-
-  // return avarageMetric;
   return avarages;
 };
 
@@ -93,15 +93,16 @@ const createAvaragePerfomanceReport = () => {
   let testPerfomance = getAvaragePerfomance(testFiles);
 
   const avaragePerformanceReport = JSON.stringify(
-    {
-      control: { ...controlPerfomance },
-      test: { ...testPerfomance },
-    },
+    [
+      { branch: 'control', ...controlPerfomance },
+      { branch: 'test', ...testPerfomance },
+    ],
     null,
     2
   );
 
   createReportsDir(config.reportsFolder);
+
   fs.writeFile(
     'reports/avarage-report.json',
     avaragePerformanceReport,
@@ -117,17 +118,3 @@ const createAvaragePerfomanceReport = () => {
 };
 
 createAvaragePerfomanceReport();
-
-// console.log('avaragePerformanceReport', avaragePerformanceReport);
-
-// console.log('CONTROL ====> ', controlPerfomance);
-// console.log('TEST =======> ', testPerfomance);
-
-// metricsTESTPropsEnum.forEach((metric) => {
-//   if (controlPerfomance[metric] < testPerfomance[metric]) {
-//     console.warn(`Control ${metric}  is better!!!`);
-//     return;
-//   } else {
-//     console.info(`Test ${metric}  is better!!!`);
-//   }
-// });
